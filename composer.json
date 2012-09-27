@@ -2,7 +2,7 @@
     "name": "zendframework/tan-grid",
     "description": "Datagrid",
     "type": "zf-module",
-    "license": "BSD-3-Clause",
+    "license": "BSD-3-Clause1",
     "keywords": [
         "zf2"
     ],
