@@ -1,10 +1,11 @@
 {
-    "name": "tangram/tangram",
-    "description": "Tangram - Zend Framework 2 modules",
+    "name": "tangram/tangram-grid-module",
+    "description": "Zend Framework 2 Module that provides grids.",
     "type": "library",
     "keywords": [
         "modules",
-        "zf2"
+        "zf2",
+        "grid"
     ],
     "homepage": "https://github.com/gektor1/tangram",
     "authors": [
@@ -16,7 +17,9 @@
         "php": ">=5.3.3",
         "zendframework/zendframework": "2.*"
     },
-    "replace": {
-        "tangram/tangram-grid-module": "self.version"
-    }
+    "autoload": {
+        "psr-0": {
+            "TangramGridModule": "src/"
+        }
+    },
 }
