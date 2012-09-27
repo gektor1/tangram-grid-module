@@ -2,16 +2,19 @@
 
 namespace TangramGridModule;
 
+use Zend\Loader\AutoloaderFactory;
+use Zend\Loader\StandardAutoloader;
+
 class Module
 {
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+            AutoloaderFactory::STANDARD_AUTOLOADER => array(
+                StandardAutoloader::LOAD_NS => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                )
-            )
+                ),
+            ),
         );
     }
 
