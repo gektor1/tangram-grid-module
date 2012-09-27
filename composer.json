@@ -1,11 +1,6 @@
 {
     "name": "zendframework/tan-grid",
-    "description": "Datagrid",
-    "type": "zf-module",
-    "license": "BSD-3-Clause1",
-    "keywords": [
-        "zf2"
-    ],
+    "type": "zf-extansion",
     "homepage": "https://github.com/gektor1/TanGrid",
     "authors": [
         {
