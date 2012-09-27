@@ -18,5 +18,5 @@
     },
     "replace": {
         "tangram/tangram-grid-module": "self.version"
-    },
+    }
 }
