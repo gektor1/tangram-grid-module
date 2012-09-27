@@ -1,13 +1,19 @@
 {
-    "name": "zendframework/tan-grid",
-    "type": "zf-extansion",
-    "homepage": "https://github.com/gektor1/TanGrid",
+    "name": "tangram/tangram",
+    "description": "Tangram - Zend Framework 2 modules",
+    "type": "library",
+    "keywords": [
+        "modules",
+        "zf2"
+    ],
+    "homepage": "https://github.com/gektor1/tangram",
     "authors": [
         {
             "name": "Dmitry Medvedev"
         }
     ],
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.*"
     }
 }
