@@ -17,6 +17,6 @@
         "zendframework/zendframework": "2.*"
     },
     "replace": {
-        "tangram/tangram-grid-module": "self.version",
+        "tangram/tangram-grid-module": "self.version"
     },
 }
