@@ -1,5 +1,5 @@
 {
-    "name": "gektor1/TanGrid",
+    "name": "zendframework/tan-grid",
     "description": "Datagrid",
     "type": "zf-module",
     "license": "BSD-3-Clause",
