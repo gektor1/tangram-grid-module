@@ -4,15 +4,15 @@
     "type": "zf-module",
     "license": "BSD-3-Clause",
     "keywords": [
-        "zf2",
+        "zf2"
     ],
     "homepage": "https://github.com/gektor1/TanGrid",
     "authors": [
         {
-            "name": "Dmitry Medvedev",
-        },
+            "name": "Dmitry Medvedev"
+        }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.3.3"
     }
 }
