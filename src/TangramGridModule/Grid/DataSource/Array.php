@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2011 by Pieter Vogelaar (pietervogelaar.nl) and Kees Schepers (keesschepers.nl)
  *
@@ -31,8 +32,7 @@
  * @copyright  Copyright (C) 2011 by Pieter Vogelaar (pietervogelaar.nl) and Kees Schepers (keesschepers.nl)
  * @license    MIT
  */
-class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_DataSource_Interface
-{
+class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_DataSource_Interface {
 
     /**
      * @var array
@@ -44,8 +44,7 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
      *
      * @param mixed $source
      */
-    public function __construct($source)
-    {
+    public function __construct($source) {
         parent::__construct();
 
         if (!is_array($source)) {
@@ -62,8 +61,7 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
      *
      * @return array
      */
-    private function _setColumns()
-    {
+    private function _setColumns() {
         $this->columns = new Grid_DataSource_Columns();
 
         foreach ($this->_source as $row) {
@@ -80,8 +78,7 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
      *
      * @return array
      */
-    public function setEventSort(Closure $function)
-    {
+    public function setEventSort(Closure $function) {
         $this->_onOrder = $function;
     }
 
@@ -91,8 +88,7 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
      *
      * @return array
      */
-    public function setEventFilter(Closure $function)
-    {
+    public function setEventFilter(Closure $function) {
         $this->_onFilter = $function;
     }
 
@@ -101,8 +97,7 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
      *
      * @return array
      */
-    public function getDefaultSorting()
-    {
+    public function getDefaultSorting() {
         return null;
     }
 
@@ -119,13 +114,12 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
      *                                exclude the columns here to gain some performance.
      * @return string JSON data
      */
-    public function getJson($encode = true, array $excludeColumns = array())
-    {
+    public function getJson($encode = true, array $excludeColumns = array()) {
         $offset = $this->_limitPerPage * ($this->_params['page'] - 1);
         $source = $this->_source;
 
         if (isset($this->_params['filters'])
-            && (!isset($this->_params['_search']) || 'true' == $this->_params['_search'])
+                && (!isset($this->_params['_search']) || 'true' == $this->_params['_search'])
         ) {
             $filters = json_decode($this->_params['filters'], true);
             $source = $this->_filter($source, $filters);
@@ -158,8 +152,7 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
      * @param  string $filterType (start or contains)
      * @return array
      */
-    protected function _filter(array $source, array $filters, $filterType = 'start')
-    {
+    protected function _filter(array $source, array $filters, $filterType = 'start') {
         $rules = $filters['rules'];
         $groupOp = $filters['groupOp'];
         $filterType = 'contains' == $filterType ? 'contains' : 'start';
@@ -175,12 +168,12 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
             foreach ($source as $key => $value) {
                 $strpos = stripos($value[$column['field']], $column['data']);
                 if (($filterType == 'start' && $strpos === 0 || $filterType == 'contains' && $strpos !== false)
-                    && ($groupOp != 'AND' || $i == 0)) {
+                        && ($groupOp != 'AND' || $i == 0)) {
                     if (!isset($results[$key])) {
                         $results[$key] = $value;
                     }
                 } elseif (($filterType == 'start' && $strpos !== 0 || $filterType == 'contains' && $strpos === false)
-                    && $groupOp == 'AND' && isset($results[$key])) {
+                        && $groupOp == 'AND' && isset($results[$key])) {
                     unset($results[$key]);
                 }
             }
@@ -189,8 +182,7 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
         return $results;
     }
 
-    protected function _sort($source)
-    {
+    protected function _sort($source) {
         $sidx = $this->_params['sidx'];
         $sord = 'desc' == $this->_params['sord'] ? SORT_DESC : SORT_ASC;
 
@@ -204,4 +196,5 @@ class Grid_DataSource_Array extends Grid_DataSource_Abstract implements Grid_Dat
 
         return $source;
     }
+
 }

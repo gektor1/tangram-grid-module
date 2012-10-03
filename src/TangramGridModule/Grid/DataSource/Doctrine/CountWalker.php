@@ -13,8 +13,8 @@ use Doctrine\ORM\Query\TreeWalkerAdapter,
  * @copyright  Copyright (C) 2011 by Pieter Vogelaar (pietervogelaar.nl) and Kees Schepers (keesschepers.nl)
  * @license    MIT
  */
-class CountWalker extends TreeWalkerAdapter
-{
+class CountWalker extends TreeWalkerAdapter {
+
     /**
      * @var SelectStatement
      */
@@ -26,22 +26,19 @@ class CountWalker extends TreeWalkerAdapter
      * @param SelectStatement $AST
      * @return void
      */
-    public function walkSelectStatement(SelectStatement $AST)
-    {
+    public function walkSelectStatement(SelectStatement $AST) {
         $this->_AST = $AST;
         $this->_AST->selectClause->selectExpressions = array();
         $this->_addCountComponent();
 
         // ORDER BY is not needed, only increases query execution through unnecessary sorting.
         $this->_AST->orderByClause = null;
-
     }
 
     /**
      * Adds the count(field) component to the query
      */
-    protected function _addCountComponent()
-    {
+    protected function _addCountComponent() {
         $parent = null;
         $parentName = null;
 
@@ -67,12 +64,13 @@ class CountWalker extends TreeWalkerAdapter
          * count total amount of results.
          */
         $pathExpression = new PathExpression(
-            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
-            $parent['metadata']->getSingleIdentifierFieldName()
+                        PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
+                        $parent['metadata']->getSingleIdentifierFieldName()
         );
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
         $this->_AST->selectClause->selectExpressions[] = new SelectExpression(
-            new AggregateExpression('count', $pathExpression, true), null);
+                        new AggregateExpression('count', $pathExpression, true), null);
     }
+
 }

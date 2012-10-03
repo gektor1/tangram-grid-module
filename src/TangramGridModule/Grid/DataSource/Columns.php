@@ -9,8 +9,8 @@ namespace TangramGridModule\Grid\DataSource;
  * @copyright  Copyright (C) 2011 by Pieter Vogelaar (pietervogelaar.nl) and Kees Schepers (keesschepers.nl)
  * @license    MIT
  */
-class Columns extends \ArrayObject
-{
+class Columns extends \ArrayObject {
+
     /**
      * If specified, only these columns will be visible in the grid
      *
@@ -23,8 +23,7 @@ class Columns extends \ArrayObject
      *
      * @param array $columns
      */
-    public function __construct(array $columns = array())
-    {
+    public function __construct(array $columns = array()) {
         foreach ($columns as $column) {
             $this->add($column);
         }
@@ -38,8 +37,7 @@ class Columns extends \ArrayObject
      * @param string  $sidx     The fieldname to be used when sorting is isseud thru the grid
      * @param integer $position The position number, can be any number.
      */
-    public function add($column, $label = null, $sidx = null, $position = null, $data = null)
-    {
+    public function add($column, $label = null, $sidx = null, $position = null, $data = null) {
         if (!is_array($column)) {
             $name = $column;
 
@@ -57,12 +55,12 @@ class Columns extends \ArrayObject
              */
             if (!is_callable($data)) {
                 $column['data'] = function($row) use ($column, $data) {
-                        if (null !== $data) {
-                            return $data;
-                        } else {
-                            return isset($row[$column['name']]) ? $row[$column['name']] : null;
-                        }
-                    };
+                            if (null !== $data) {
+                                return $data;
+                            } else {
+                                return isset($row[$column['name']]) ? $row[$column['name']] : null;
+                            }
+                        };
             } else {
                 $column['data'] = $data;
             }
@@ -77,8 +75,7 @@ class Columns extends \ArrayObject
      * @param  string $name
      * @return boolean
      */
-    public function __isset($name)
-    {
+    public function __isset($name) {
         return $this->offsetExists($name);
     }
 
@@ -88,8 +85,7 @@ class Columns extends \ArrayObject
      * @param  string $column
      * @return array
      */
-    public function __get($column)
-    {
+    public function __get($column) {
         if ($this->offsetExists($column)) {
             return $this->offsetGet($column);
         } else {
@@ -102,8 +98,7 @@ class Columns extends \ArrayObject
      *
      * @return ArrayIterator
      */
-    public function getIterator()
-    {
+    public function getIterator() {
         $this->_sort();
 
         return parent::getIterator();
@@ -112,8 +107,7 @@ class Columns extends \ArrayObject
     /**
      * Sorts the columns
      */
-    protected function _sort()
-    {
+    protected function _sort() {
         $arrayCopy = $this->getArrayCopy();
 
         if (count($this->showColumns) > 0) {
@@ -152,8 +146,7 @@ class Columns extends \ArrayObject
      * @return array
      * @deprecated Use ->getAll() because of better naming
      */
-    public function getColumns()
-    {
+    public function getColumns() {
         return $this->getAll();
     }
 
@@ -162,9 +155,9 @@ class Columns extends \ArrayObject
      *
      * @return array
      */
-    public function getAll()
-    {
+    public function getAll() {
         $this->_sort();
         return $this->getArrayCopy();
     }
+
 }

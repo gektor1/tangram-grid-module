@@ -6,10 +6,9 @@ use Zend\Loader\AutoloaderFactory;
 use Zend\Loader\StandardAutoloader;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 
-class Module implements ServiceProviderInterface
-{
-    public function getAutoloaderConfig()
-    {
+class Module implements ServiceProviderInterface {
+
+    public function getAutoloaderConfig() {
         return array(
             AutoloaderFactory::STANDARD_AUTOLOADER => array(
                 StandardAutoloader::LOAD_NS => array(
@@ -19,16 +18,14 @@ class Module implements ServiceProviderInterface
         );
     }
 
-    public function getConfig()
-    {
+    public function getConfig() {
         return include __DIR__ . '/config/module.config.php';
     }
 
     /**
      * @inheritdoc
      */
-    public function getServiceConfig()
-    {
+    public function getServiceConfig() {
         return array(
             'aliases' => array(
             ),

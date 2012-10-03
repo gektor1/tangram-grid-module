@@ -13,10 +13,8 @@ namespace TangramGridModule\Grid\DataSource;
  * @copyright  Copyright (C) 2011 by Pieter Vogelaar (pietervogelaar.nl) and Kees Schepers (keesschepers.nl)
  * @license    MIT
  */
-class Doctrine
-    extends DataSourceAbstract
-    implements DataSourceInterface
-{
+class Doctrine extends DataSourceAbstract implements DataSourceInterface {
+
     /**
      * @var $_query \Doctrine\ORM\Query
      */
@@ -27,16 +25,15 @@ class Doctrine
      *
      * @param mixed $source
      */
-    public function __construct($source)
-    {
+    public function __construct($source) {
         parent::__construct();
 
-        switch($source) {
+        switch ($source) {
             case ($source instanceof \Doctrine\ORM\QueryBuilder) :
                 $this->_query = $source->getQuery();
                 break;
             case ($source instanceof \Doctrine\ORM\Query) :
-                 $this->_query = $source;
+                $this->_query = $source;
                 break;
             case ($source instanceof \Doctrine\ORM\EntityRepository) :
                 $this->_query = $source->createQueryBuilder('al')->getQuery();
@@ -55,41 +52,39 @@ class Doctrine
      *
      * @return void
      */
-    private function _initEvents()
-    {
+    private function _initEvents() {
         $onOrder = function(array $params, DataSourceInterface $dataSource) {
-            $columns = $dataSource->columns->getAll();
+                    $columns = $dataSource->columns->getAll();
+                    $sidx = $dataSource->getSidx($params['sidx']);
+                    $sord = (in_array(strtoupper($params['sord']), array('ASC', 'DESC')) ? strtoupper($params['sord']) : 'ASC');
 
-            $sidx = $dataSource->getSidx($params['sidx']);
-
-            $sord = (in_array(strtoupper($params['sord']), array('ASC', 'DESC')) ? strtoupper($params['sord']) : 'ASC');
-
-            return array(
-                \Doctrine\ORM\Query::HINT_CUSTOM_TREE_WALKERS => array('TangramGridModule\Grid\DataSource\Doctrine\OrderByWalker'),
-                'sidx' => $sidx,
-                'sord' => $sord,
-            );
-        };
+                    return array(
+                        \Doctrine\ORM\Query::HINT_CUSTOM_TREE_WALKERS => array('TangramGridModule\Grid\DataSource\Doctrine\OrderByWalker'),
+                        'sidx' => $sidx,
+                        'sord' => $sord,
+                    );
+                };
 
         $this->_onOrder = $onOrder;
 
         $onFilter = function(array $params, DataSourceInterface $dataSource) {
-            $filters = json_decode($params['filters']);
-            foreach ($filters->rules as $index => $rule) {
-                $fieldName = $dataSource->getFieldName($rule->field);
-                if ($fieldName) {
-                    $rule->field = $fieldName;
-                } else {
-                    unset($filters->rules[$index]);
-                }
-            }
+                    $filters = json_decode($params['filters']);
+                    foreach ($filters->rules as $index => $rule) {
+//                $fieldName = $dataSource->getFieldName($rule->field);
+                        $fieldName = $dataSource->getSidx($rule->field);
+                        if ($fieldName) {
+                            $rule->field = $fieldName;
+                        } else {
+                            unset($filters->rules[$index]);
+                        }
+                    }
 
-            return array(
-                \Doctrine\ORM\Query::HINT_CUSTOM_TREE_WALKERS => array('TangramGridModule\Grid\DataSource\Doctrine\WhereLikeWalker'),
-                'operator' => $filters->groupOp,
-                'fields' => $filters->rules,
-            );
-        };
+                    return array(
+                        \Doctrine\ORM\Query::HINT_CUSTOM_TREE_WALKERS => array('TangramGridModule\Grid\DataSource\Doctrine\WhereLikeWalker'),
+                        'operator' => $filters->groupOp,
+                        'fields' => $filters->rules,
+                    );
+                };
 
         $this->_onFilter = $onFilter;
     }
@@ -100,8 +95,7 @@ class Doctrine
      *
      * @return array
      */
-    private function _setColumns()
-    {
+    private function _setColumns() {
         $this->columns = new Columns();
 
         $selectClause = $this->_query->getAST()->selectClause;
@@ -134,7 +128,6 @@ class Doctrine
              *
              * And info of the field would be extracted from this class, something like that.
              */
-
             $expr = $selExpr->expression;
 
             /* @var $expr \Doctrine\ORM\Query\AST\PathExpression */
@@ -155,13 +148,15 @@ class Doctrine
                 }
 
                 $sidx = $name;
-            } else {
-                $name = $selExpr->fieldIdentificationVariable;
-                $label = $name;
-                $sidx = null;
-            }
 
-            $this->columns->add($name, $label, $sidx);
+                $this->columns->add($name, $label, $sidx);
+            }
+//            else {
+//                $name = $selExpr->fieldIdentificationVariable;
+//                $label = $name;
+//                $sidx = null;
+//            }
+//            $this->columns->add($name, $label, $sidx);
         }
     }
 
@@ -171,8 +166,7 @@ class Doctrine
      *
      * @return array
      */
-    public function setEventSort(\Closure $function)
-    {
+    public function setEventSort(\Closure $function) {
         $this->_onOrder = $function;
     }
 
@@ -182,8 +176,7 @@ class Doctrine
      *
      * @return array
      */
-    public function setEventFilter(\Closure $function)
-    {
+    public function setEventFilter(\Closure $function) {
         $this->_onFilter = $function;
     }
 
@@ -193,10 +186,9 @@ class Doctrine
      *
      * @return array
      */
-    public function getDefaultSorting()
-    {
+    public function getDefaultSorting() {
         if (null !== $this->_query->getAST()->orderByClause) {
-           //support for 1 field only
+            //support for 1 field only
             $orderByClause = $this->_query->getAST()->orderByClause;
 
             /* @var $orderByItem \Doctrine\ORM\Query\AST\OrderByItem */
@@ -218,20 +210,19 @@ class Doctrine
      *
      * @return array Doctrine compatible hints array
      */
-    private function _getQueryHints()
-    {
+    private function _getQueryHints() {
         $hints = array();
 
         // Set sorting if defined
         if (array_key_exists('sidx', $this->_params) && strlen($this->_params['sidx']) > 0
-            && $this->getSidx($this->_params['sidx'])
+                && $this->getSidx($this->_params['sidx'])
         ) {
             $onSort = $this->_onOrder;
             $hints = array_merge_recursive($hints, $onSort($this->_params, $this));
         }
 
         if (array_key_exists('filters', $this->_params) && (array_key_exists('_search', $this->_params)
-            && $this->_params['_search'] == true)) {
+                && $this->_params['_search'] == true)) {
 
             $onFilter = $this->_onFilter;
             $hints = array_merge_recursive($hints, $onFilter($this->_params, $this));
@@ -254,24 +245,20 @@ class Doctrine
      * @param  Closure $closure
      * @return string  JSON data
      */
-    public function getJson($encode = true, array $excludeColumns = array(), Closure $closure = null)
-    {
+    public function getJson($encode = true, array $excludeColumns = array(), Closure $closure = null) {
         $offset = $this->_limitPerPage * ($this->_params['page'] - 1);
         $hints = $this->_getQueryHints();
 
         $count = Doctrine\Paginate::getTotalQueryResults($this->_query, $hints);
 
         $paginateQuery = Doctrine\Paginate::getPaginateQuery(
-            $this->_query,
-            $offset,
-            $this->_limitPerPage,
-            $hints
+                        $this->_query, $offset, $this->_limitPerPage, $hints
         );
 
         $queryResult = $paginateQuery->getResult();
 
         $this->_data = array();
-        $this->_data['page'] = (int)$this->_params['page'];
+        $this->_data['page'] = (int) $this->_params['page'];
         $this->_data['total'] = ceil($count / $this->_limitPerPage);
         $this->_data['records'] = $count;
         $this->_data['rows'] = array();
@@ -281,7 +268,7 @@ class Doctrine
         } else {
             $closureResult = null;
         }
-        
+
         foreach ($queryResult as $row) {
             $this->_renderRow($row, $excludeColumns, $closureResult);
         }
@@ -296,8 +283,7 @@ class Doctrine
      * @param  string $sidx
      * @return string|boolean
      */
-    public function getSidx($sidx)
-    {
+    public function getSidx($sidx) {
         if (strpos($sidx, '.') === false) {
             $sidx = $this->getFieldName($sidx);
         }
@@ -313,8 +299,7 @@ class Doctrine
      * @param  string $alias
      * @return string|boolean
      */
-    public function getFieldName($alias)
-    {
+    public function getFieldName($alias) {
         $field = false;
 
         /* @var $selExpr \Doctrine\ORM\Query\AST\SelectExpression */
@@ -341,8 +326,40 @@ class Doctrine
     /**
      * @return \Doctrine\ORM\Query
      */
-    public function getQuery()
-    {
+    public function getQuery() {
         return $this->_query;
+    }
+
+    /**
+     *
+     * @param type $name
+     * @param type $label
+     * @param type $sidx
+     * @param type $position
+     * @param type $data
+     */
+    public function formatColumnData(&$name, &$label = null, &$sidx = null, &$position = null, &$data = null)
+    {
+        if (is_null($label))
+        {
+            $label = $name;
+        }
+        if (is_null($sidx))
+        {
+            $sidx = $this->getSidx($name);
+            if (is_null($data))
+            {
+                $methods = explode('.', $sidx);
+                unset($methods[0]);
+                
+                $data = function ($row) use ($methods) {
+                    $result = null;
+                    foreach ($methods as $method)
+                        $result = call_user_func(array($row, "get" . ucfirst($method)));
+                    
+                    return $result;
+                };
+            }
+        }
     }
 }

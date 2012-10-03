@@ -9,14 +9,13 @@ use Doctrine\ORM\Query;
  * @copyright  Copyright (C) 2011 by Pieter Vogelaar (pietervogelaar.nl) and Kees Schepers (keesschepers.nl)
  * @license    MIT
  */
-class Paginate
-{
+class Paginate {
+
     /**
      * @param Query $query
      * @return Query
      */
-    protected static function cloneQuery(Query $query)
-    {
+    protected static function cloneQuery(Query $query) {
         /* @var $countQuery Query */
         $countQuery = clone $query;
         $params = $query->getParameters();
@@ -36,15 +35,14 @@ class Paginate
      * @param Query $query
      * @return int
      */
-    public static function getTotalQueryResults(Query $query, array $hints = array())
-    {
+    public static function getTotalQueryResults(Query $query, array $hints = array()) {
         /* @var $countQuery Query */
         $countQuery = self::cloneQuery($query);
 
         if (null === $countQuery->getAST()->havingClause) {
             $hints = array_merge_recursive($hints, array(
                 Query::HINT_CUSTOM_TREE_WALKERS => array('TangramGridModule\Grid\DataSource\Doctrine\CountWalker')
-            ));
+                    ));
         }
 
         foreach ($hints as $name => $value) {
@@ -55,18 +53,18 @@ class Paginate
         $countQuery->setParameters($query->getParameters());
 
         if (null !== $countQuery->getAST()->groupByClause
-            || null !== $countQuery->getAST()->havingClause
+                || null !== $countQuery->getAST()->havingClause
         ) {
             $walker = function($node, &$keys, $walker) {
-                    foreach ($node as $key => $value) {
-                        if (is_array($value) || $value instanceof \Doctrine\ORM\Query\AST\Node) {
-                            $walker($value, $keys, $walker);
+                        foreach ($node as $key => $value) {
+                            if (is_array($value) || $value instanceof \Doctrine\ORM\Query\AST\Node) {
+                                $walker($value, $keys, $walker);
+                            }
+                            if ($value instanceof \Doctrine\ORM\Query\AST\InputParameter && $value->isNamed) {
+                                $keys[] = $value->name;
+                            }
                         }
-                        if ($value instanceof \Doctrine\ORM\Query\AST\InputParameter && $value->isNamed) {
-                            $keys[] = $value->name;
-                        }
-                    }
-                };
+                    };
 
             $ast = $countQuery->getAST();
 
@@ -89,7 +87,7 @@ class Paginate
             $sql = 'SELECT COUNT(*) FROM (' . $countQuery->getSQL() . ') results';
 
             $stmt = $countQuery->getEntityManager()->getConnection()
-                ->executeQuery($sql, $values);
+                    ->executeQuery($sql, $values);
 
             $count = $stmt->fetchColumn();
         } else {
@@ -105,12 +103,12 @@ class Paginate
      * @param Query $query
      * @return Query
      */
-    public static function getPaginateQuery(Query $query, $offset, $itemCountPerPage, array $hints = array())
-    {
+    public static function getPaginateQuery(Query $query, $offset, $itemCountPerPage, array $hints = array()) {
         foreach ($hints as $name => $hint) {
             $query->setHint($name, $hint);
         }
 
         return $query->setFirstResult($offset)->setMaxResults($itemCountPerPage);
     }
+
 }

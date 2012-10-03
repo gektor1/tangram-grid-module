@@ -10,8 +10,8 @@ namespace TangramGridModule\Grid\DataSource;
  * @copyright  Copyright (C) 2011 by Pieter Vogelaar (pietervogelaar.nl) and Kees Schepers (keesschepers.nl)
  * @license    MIT
  */
-class DataSourceAbstract
-{
+class DataSourceAbstract {
+
     /**
      * The columns container
      *
@@ -80,11 +80,10 @@ class DataSourceAbstract
      *
      * @param mixed $source
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->setAutoEscapeClosure(function($string) {
-            return htmlspecialchars($string, ENT_COMPAT, 'UTF-8');
-        });
+                    return htmlspecialchars($string, ENT_COMPAT, 'UTF-8');
+                });
     }
 
     /**
@@ -93,8 +92,7 @@ class DataSourceAbstract
      * @param  string $column
      * @return Grid_DataSource_Abstract
      */
-    public function setIdentifierColumn($column)
-    {
+    public function setIdentifierColumn($column) {
         if (isset($this->columns[$column])) {
             $this->_identifierColumn = $this->columns[$column];
         } else {
@@ -110,8 +108,7 @@ class DataSourceAbstract
      * @param  Closure $closure
      * @return Grid_DataSource_Abstract
      */
-    public function setAutoEscapeClosure(\Closure $closure)
-    {
+    public function setAutoEscapeClosure(\Closure $closure) {
         $this->_autoEscapeClosure = $closure;
         return $this;
     }
@@ -126,8 +123,7 @@ class DataSourceAbstract
      *
      * @param array $columns
      */
-    public function excludeColumnsFromEscaping(array $columns)
-    {
+    public function excludeColumnsFromEscaping(array $columns) {
         foreach ($columns as $column) {
             $this->_excludedColumnsFromEscaping[] = $column;
         }
@@ -141,8 +137,7 @@ class DataSourceAbstract
      *
      * @return Grid_DataSource_Abstract
      */
-    public function resetExcludeColumnsFromEscaping()
-    {
+    public function resetExcludeColumnsFromEscaping() {
         $this->_excludedColumnsFromEscaping = array();
 
         return $this;
@@ -154,8 +149,7 @@ class DataSourceAbstract
      * @param  array $params
      * @return Grid_DataSource_Abstract
      */
-    public function setParameters(array $params)
-    {
+    public function setParameters(array $params) {
         $this->_params = $params;
         return $this;
     }
@@ -165,8 +159,7 @@ class DataSourceAbstract
      *
      * @return array
      */
-    public function getParameters()
-    {
+    public function getParameters() {
         return $this->_params;
     }
 
@@ -176,10 +169,22 @@ class DataSourceAbstract
      * @param  integer $number
      * @return Grid_DataSource_Abstract
      */
-    public function setResultsPerPage($number)
-    {
+    public function setResultsPerPage($number) {
         $this->_limitPerPage = (int) $number;
         return $this;
+    }
+
+    /**
+     *
+     * @param type $name
+     * @param type $label
+     * @param type $sidx
+     * @param type $position
+     * @param type $data
+     */
+    public function formatColumnData(&$name, &$label = null, &$sidx = null, &$position = null, &$data = null)
+    {
+        
     }
 
     /**
@@ -190,21 +195,19 @@ class DataSourceAbstract
      * @param mixed $closureResult
      * @return void
      */
-    protected function _renderRow($row, $excludeColumns = array(), $closureResult = null)
-    {
+    protected function _renderRow($row, $excludeColumns = array(), $closureResult = null) {
         $rowColumns = array();
         foreach ($this->columns as $index => $column) {
             if (array_key_exists('data', $column)) {
                 if (is_callable($column['data'], false, $method)) {
                     $rowColumns[$index] = $this->_escape(
-                        call_user_func($column['data'], $row, $closureResult),
-                        $column['name']
+                            call_user_func($column['data'], $row, $closureResult), $column['name']
                     );
                 } else {
                     // Replace all column tokens that are possibly available in the column data
                     array_walk($row, function($value, $key) use (&$column) {
-                        $column['data'] = str_replace('{' . strtolower($key) . '}', $value, $column['data']);
-                    });
+                                $column['data'] = str_replace('{' . strtolower($key) . '}', $value, $column['data']);
+                            });
 
                     $rowColumns[$index] = $this->_escape($column['data'], $column['name']);
                 }
@@ -237,8 +240,7 @@ class DataSourceAbstract
      * @param  string $columnName
      * @return string
      */
-    protected function _escape($string, $columName = null)
-    {
+    protected function _escape($string, $columName = null) {
         if (null !== $this->_autoEscapeClosure) {
             if (null === $columName || !in_array($columName, $this->_excludedColumnsFromEscaping)) {
                 $autoEscapeClosure = $this->_autoEscapeClosure;
@@ -248,4 +250,5 @@ class DataSourceAbstract
 
         return $string;
     }
+
 }

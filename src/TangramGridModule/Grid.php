@@ -352,7 +352,7 @@ class Grid {
      *                             position, define it as an attribute.
      * @return self
      */
-    public function addColumn($name, $data, $label = null, $sidx = null, $attributes = array()) {
+    public function addColumn($name, $data = null, $label = null, $sidx = null, $attributes = array()) {
         // Determine position
         $position = null;
         if (is_integer($attributes)) {
@@ -373,10 +373,10 @@ class Grid {
                     array('data' => $data, 'label' => $label, 'index' => $sidx), $attributes
             );
         } else {
+            $this->_dataSource->formatColumnData($name, $label, $sidx, $position, $data);
             // Add column to the data source
             $this->_dataSource->columns->add($name, $label, $sidx, $position, $data);
         }
-
 
         // Set the sortable attribute to false if no sort index is specified
         if (null === $sidx) {
@@ -388,6 +388,15 @@ class Grid {
             $this->setColumnAttributes($name, $attributes);
         }
 
+        return $this;
+    }
+
+    public function addColumns($columns = array())
+    {
+        foreach ($columns as $column)
+        {
+            $this->addColumn($column);
+        }
         return $this;
     }
 
@@ -651,8 +660,7 @@ EOF;
         $output .= 'var lastsel;' . PHP_EOL;
         $output .= '$("#' . $this->_id . '").' . $this->getJavaScriptClass() . '(' . $json . ');' . PHP_EOL;
 
-        if ($this->_filterToolbar === true)
-        {
+        if ($this->_filterToolbar === true) {
             $output .= '$("#' . $this->_id . '").' . $this->getJavaScriptClass() . '("filterToolbar",{"stringResult":true});' . PHP_EOL;
         }
 

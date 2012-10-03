@@ -9,11 +9,11 @@ namespace TangramGridModule\Grid\DataSource;
  * @copyright  Copyright (C) 2011 by Pieter Vogelaar (pietervogelaar.nl) and Kees Schepers (keesschepers.nl)
  * @license    MIT
  */
-interface DataSourceInterface
-{
+interface DataSourceInterface {
     /*
      * Returns a JSON encoded string of the data to be send
      */
+
     public function getJson();
 
     /**
